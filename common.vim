@@ -48,8 +48,8 @@ set list
 set listchars=tab:\\_,trail:_
 
 " Options for the GUI
-set guioptions-=T               " No toolbar
-set guioptions-=m               " No menubar
+"set guioptions-=T               " No toolbar
+"set guioptions-=m               " No menubar
 set guioptions-=r               " No scrollbar
 set guioptions-=R               " Really no scrollbar
 set guioptions-=l               " No scrollbar
@@ -66,6 +66,9 @@ match OverLength /\%81v.*/
 
 " ****
 " MAPS
+
+" Enable FuzzyFinder
+map <leader>t :FuzzyFinderTextMate<CR>
 
 " toggle search highlighting in both normal and insert modes
 map <F7> :set hlsearch!<CR>
