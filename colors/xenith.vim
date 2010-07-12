@@ -1,7 +1,17 @@
 syntax reset
 
-"highlight normal font='fixed' guifg=white guibg=black
-highlight normal font='Bitstream Vera Sans Mono 7' ctermfg=grey guifg=white guibg=black
+let colors_name = 'xenith'
+
+" Vim >= 7.0 specific colors
+if version >= 700
+    hi CursorLine   guibg=#2d2d2d
+    hi CursorColumn guibg=#2d2d2d
+    hi MatchParen   guifg=#f6f3e8 guibg=#857b6f gui=bold
+    hi Pmenu        guifg=#f6f3e8 guibg=#444444
+    hi PmenuSel     guifg=#000000 guibg=#cae682
+endif
+
+highlight normal ctermfg=grey guifg=white guibg=black
 
 highlight search ctermbg=3 ctermfg=0 guifg=black guibg=yellow
 

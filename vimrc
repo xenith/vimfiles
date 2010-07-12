@@ -1,4 +1,4 @@
 set runtimepath +=~/.vim
-let colors_name="xenith"
+set guifont=Deja\ Vu\ Sans\ Mono\ 10
 colorscheme xenith
 source ~/.vim/common.vim
