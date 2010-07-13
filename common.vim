@@ -26,9 +26,10 @@ set foldlevel=1000              " Big number so it doesn't autofold
 set autoread                    " Watch for outside changes
 set autowrite                   " Automatically save on various commands
 set nobackup                    " Never keep a backup file
-
+set nowrap                      " Don't wrap lines
+set linebreak                   " Wraps lines at convenient points
 set ruler                       " Show the cursor position all the time
-set history=50                  " Keep 50 lines of command line history
+set history=500                 " Keep 500 lines of command line history
 set showcmd                     " Show current uncompleted command
 set showmatch                   " Show matching braces
 set showmode                    " Tell us which mode we are in
@@ -42,10 +43,12 @@ set background=dark             " So I don't get that ugly grey bar on the side
 set backspace=indent,eol,start  " Allow backspacing over everything
 set laststatus=2                " Always show a statusline
 set term=xterm-color            " Makes mouse work in Eterm
+set mouse=a                     " Makes mouse work in terminal
+set ttymouse=xterm2             " Makes mouse work in terminal
 set ttyfast                     " Fast terminal (local!), updates faster
 set report=0                    " Report all changed lines
 set list
-set listchars=tab:\\_,trail:_
+set listchars=tab:▷⋅,trail:_,nbsp:⋅
 
 " Options for the GUI
 "set guioptions-=T               " No toolbar
@@ -60,9 +63,12 @@ set guioptions+=aA              " Selection options, so we can copy/paste
 " unknown options
 set wildmode=full
 set pastetoggle=<F12>
-set grepprg=grep\ -nH\ 
+set grepprg=grep\ -nH\ |
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
 match OverLength /\%81v.*/
+
+" Mark syntax errors with :signs
+let g:syntastic_enable_signs=1
 
 " ****
 " MAPS
@@ -99,12 +105,12 @@ vmap rot g?
 
 " C type language specific maps
 function! C_maps()
-	map!	'if	if () {o}keei
-	map!	'for	for () {o}keei
-	map!	'while	while () {o}keei
-	map!	'inc	#include <.h>hhi
-	map!	'def	#define a
-	map!	'main	int main(int argc, char **argv)o{o}ki
+    map!    'if     if () {o}keei
+    map!    'for    for () {o}keei
+    map!    'while  while () {o}keei
+    map!    'inc    #include <.h>hhi
+    map!    'def    #define a
+    map!    'main   int main(int argc, char **argv)o{o}ki
 endfu
 
 
@@ -120,7 +126,6 @@ if has("autocmd")
     " Also load indent files, to automatically do language-dependent
     " indenting.
     au BufNewFile,Bufread *.edc     setf edc
-    au BufNewFile,Bufread *.di      setf dryice
     au BufNewFile,Bufread * exec 'match Todo /\%80v/'
 
     au FileType mail
@@ -190,9 +195,9 @@ if has("autocmd")
     let python_highlight_all = 1
 
     " Restore position in file if previously edited (uses viminfo)
-    au BufReadPost	*
+    au BufReadPost  *
         \   if line("'\"") > 0 && line("'\"") <= line("$")
-        \ |	exe "normal g'\""
+        \ | exe "normal g'\""
         \ | endif
 
     au BufRead,BufNewFile *.gpl
@@ -207,7 +212,98 @@ endif " has("autocmd")
 " have that capability.
 if has("statusline")
     " Format the statusline
-    set statusline=%-30.30(%F%m%r%)\ Type:\ %Y\ Buf:\ %n%=%l,%c%V\ %P
+    " set statusline=%-30.30(%F%m%r%)\ Type:\ %Y\ Buf:\ %n%=%l,%c%V\ %P
+
+    " Show the help file flag
+    set statusline+=%h
+    " Show the filename with path, with read-only and modified flags
+    set statusline=%-30.30(%F%m%r%)
+    " Display a warning if the file isn't in unix format (LF)
+    set statusline+=%#warningmsg#
+    set statusline+=%{&ff!='unix'?'['.&ff.']':''}
+    set statusline+=%*
+    " Display a warning if the file isn't UTF8
+    set statusline+=%#warningmsg#
+    set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}
+    set statusline+=%*
+    " Show the file type
+    set statusline+=Type:\ %Y\ |
+    " Show the buffer number
+    set statusline+=Buf:\ %n
+    " Display a warning for mixed indentation
+    set statusline+=%#error#
+    set statusline+=%{StatuslineTabWarning()}
+    set statusline+=%*
+    " Display a warning for trailing whitespace
+    set statusline+=%#warningmsg#
+    set statusline+=%{StatuslineTrailingSpaceWarning()}
+    set statusline+=%*
+    "display a warning if &paste is set
+    set statusline+=%#error#
+    set statusline+=%{&paste?'[paste]':''}
+    set statusline+=%*
+    " Show the line number, column number, percentage through file
+    set statusline+=%=%l/%L,%c%V\ %P
+
+    "recalculate the trailing whitespace warning when idle, and after saving
+    autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
+
+    "return '[\s]' if trailing white space is detected
+    "return '' otherwise
+    function! StatuslineTrailingSpaceWarning()
+        if !exists("b:statusline_trailing_space_warning")
+
+            if !&modifiable
+                let b:statusline_trailing_space_warning = ''
+                return b:statusline_trailing_space_warning
+            endif
+
+            if search('\s\+$', 'nw') != 0
+                let b:statusline_trailing_space_warning = '[\s]'
+            else
+                let b:statusline_trailing_space_warning = ''
+            endif
+        endif
+        return b:statusline_trailing_space_warning
+    endfunction
+
+    "return the syntax highlight group under the cursor ''
+    function! StatuslineCurrentHighlight()
+        let name = synIDattr(synID(line('.'),col('.'),1),'name')
+        if name == ''
+            return ''
+        else
+            return '[' . name . ']'
+        endif
+    endfunction
+
+    "recalculate the tab warning flag when idle and after writing
+    autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
+
+    "return '[&et]' if &et is set wrong
+    "return '[mixed-indenting]' if spaces and tabs are used to indent
+    "return an empty string if everything is fine
+    function! StatuslineTabWarning()
+        if !exists("b:statusline_tab_warning")
+            let b:statusline_tab_warning = ''
+
+            if !&modifiable
+                return b:statusline_tab_warning
+            endif
+
+            let tabs = search('^\t', 'nw') != 0
+
+            "find spaces that arent used as alignment in the first indent column
+            let spaces = search('^ \{' . &ts . ',}[^\t]', 'nw') != 0
+
+            if tabs && spaces
+                let b:statusline_tab_warning =  '[mixed-indenting]'
+            elseif (spaces && !&et) || (tabs && &et)
+                let b:statusline_tab_warning = '[&et]'
+            endif
+        endif
+        return b:statusline_tab_warning
+    endfunction
 else
     set ruler
 endif
@@ -225,51 +321,51 @@ endif
 " SYNTAX
 
 if has("syntax")
-	" ************************************
-	" LANGUAGE SPECIFIC HIGHLIGHT SETTINGS
+    " ************************************
+    " LANGUAGE SPECIFIC HIGHLIGHT SETTINGS
 
-	" * C *
-	" Highlighting strings inside comments
-	let c_comment_strings=1
-	" Bad spaces. Bad.
-	"let c_space_errors=1
+    " * C *
+    " Highlighting strings inside comments
+    let c_comment_strings=1
+    " Bad spaces. Bad.
+    "let c_space_errors=1
 
-	" * PHP *
-	" syntax highlighting of sql queries (might be annoying)
-	let php3_sql_query=1
-	let phtml_sql_query=1
-	let php3_minlines = 600
-	let php_sql_query=1
-	let php_minlines = 600
-	let php_htmlInStrings = 1
-	let php_baselib = 1
+    " * PHP *
+    " syntax highlighting of sql queries (might be annoying)
+    let php3_sql_query=1
+    let phtml_sql_query=1
+    let php3_minlines = 600
+    let php_sql_query=1
+    let php_minlines = 600
+    let php_htmlInStrings = 1
+    let php_baselib = 1
 
-	" * Python *
-	let python_highlight_all = 1
+    " * Python *
+    let python_highlight_all = 1
 
-	" * SHELL *
-	let bash_is_sh=1
+    " * SHELL *
+    let bash_is_sh=1
 
-	" ***********
-	" START'ER UP
+    " ***********
+    " START'ER UP
 
-	syntax on
+    syntax on
 
-	set hlsearch
-	set incsearch
+    set hlsearch
+    set incsearch
 endif
 
 
 if has("viminfo")
-	" remember informations from previous Vim sessions
-	" '20 -> marks for last 20 files are saved
-	" no `f<value>' -> all marks are saved
-	" "50 -> max lines for each register
-	" no `:' -> 'history' items of cmd-line are saved
-	" no `/' -> 'history' items of search-pattern-history are saved
-	" `h' -> disable effect of 'hlsearch'
-	" no `@' -> 'history' items of input-line history are saved
-	" `%' -> buffer list is saved and restored if Vim is called w/o args
+    " remember informations from previous Vim sessions
+    " '20 -> marks for last 20 files are saved
+    " no `f<value>' -> all marks are saved
+    " "50 -> max lines for each register
+    " no `:' -> 'history' items of cmd-line are saved
+    " no `/' -> 'history' items of search-pattern-history are saved
+    " `h' -> disable effect of 'hlsearch'
+    " no `@' -> 'history' items of input-line history are saved
+    " `%' -> buffer list is saved and restored if Vim is called w/o args
 
-	set viminfo='50,\"200,h,%
+    set viminfo='50,\"200,h,%
 endif
