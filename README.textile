@@ -1,0 +1,7 @@
+h1. Installation
+
+Clone this repository into your home directory and name it '.vim' for Linux/OS X or 'vimfiles' for
+Windows.
+
+Create a softlink in your homedirectory from .vimrc to .vim/vimrc (for Linux/OS X). Modify .vim/vimrc with your
+custom configuration.
