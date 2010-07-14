@@ -172,22 +172,22 @@ if has("autocmd")
 
     " The following commands automatically add the shebang
     au BufNewFile *.pl
-        \   s,^,#!/usr/bin/env perl -w,
+        \   s,^,#!/usr/bin/perl -w,
         \ | w
         \ | r !chmod +x % > /dev/null
 
     au BufNewFile *.rb
-        \   s,^,#!/usr/bin/env ruby -w -KU,
+        \   s,^,#!/usr/bin/ruby -w -KU,
         \ | w
         \ | r !chmod +x % > /dev/null
 
     au BufNewFile *.sh
-        \   s,^,#!/bin/sh,
+        \   s,^,#!/bin/bash,
         \ | w
         \ | r !chmod +x % > /dev/null
 
     au BufNewFile *.py
-        \   s,^,#!/usr/bin/env python,
+        \   s,^,#!/usr/bin/python,
         \ | w
         \ | r !chmod +x % > /dev/null
 
