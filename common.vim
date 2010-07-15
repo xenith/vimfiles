@@ -18,11 +18,10 @@ set softtabstop=4               " TAB == 4 spaces
 set shiftwidth=4                " TAB == 4 spaces
 set shiftround                  " TAB == 4 spaces
 set textwidth=100               " Max 100 columns
-
+set magic                       "Set magic on, for regular expressions
 set foldmethod=indent           " Foldlevel follows indentation
 set foldlevel=1000              " Big number so it doesn't autofold
 "set foldcolumn=2                " Show that funny column on the left side
-
 set autoread                    " Watch for outside changes
 set autowrite                   " Automatically save on various commands
 set nobackup                    " Never keep a backup file
@@ -37,6 +36,7 @@ set showfulltag                 " Show complete tag completions (function + argu
 set showbreak=+                 " Used to mark wrapped lines
 set incsearch                   " Jump to found items while searching
 set hlsearch                    " Highlight search items, toggle with <F7>
+set ignorecase                  " Ignore case when searching
 set modelines=10                " I have no idea
 set display=uhex                " Show unprintable charcters as hex
 set background=dark             " So I don't get that ugly grey bar on the side
@@ -47,6 +47,7 @@ set mouse=a                     " Makes mouse work in terminal
 set ttymouse=xterm2             " Makes mouse work in terminal
 set ttyfast                     " Fast terminal (local!), updates faster
 set report=0                    " Report all changed lines
+set ffs=unix,dos,mac            "Default file types
 set list
 set listchars=tab:▷⋅,trail:_,nbsp:⋅
 
@@ -63,12 +64,24 @@ set guioptions+=aA              " Selection options, so we can copy/paste
 " unknown options
 set wildmode=full
 set pastetoggle=<F12>
-set grepprg=grep\ -nH\ |
+set grepprg=grep\ -nH\
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
 match OverLength /\%81v.*/
 
 " Mark syntax errors with :signs
 let g:syntastic_enable_signs=1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Spell checking
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Pressing ,ss will toggle and untoggle spell checking
+map <leader>ss :setlocal spell!<cr>
+
+"Shortcuts using <leader>
+map <leader>sn ]s
+map <leader>sp [s
+map <leader>sz zg
+map <leader>s? z=
 
 " ****
 " MAPS
@@ -121,6 +134,10 @@ if has("autocmd")
     " Enable file type detection.
     filetype plugin indent on
 
+    " When vimrc is edited, reload it
+    autocmd! bufwritepost vimrc source ~/.vim/vimrc
+    autocmd! bufwritepost common.vim source ~/.vim/common.vim
+
     " Use the default filetype settings, so that mail gets 'tw' set to 72,
     " 'cindent' is on in C files, etc.
     " Also load indent files, to automatically do language-dependent
@@ -137,20 +154,10 @@ if has("autocmd")
         \ | call C_maps()
         \ | set textwidth=100
 
-    au FileType perl
-        \   set tabstop=3 softtabstop=3 shiftwidth=3
-        \ | set keywordprg=perldoc\ -f
-        \ | call C_maps()
-        \ | set textwidth=100
-
     au FileType php
         \   set tabstop=3 softtabstop=3 shiftwidth=3
         \ | set keywordprg="help"
         \ | call C_maps()
-        \ | set textwidth=100
-
-    au FileType ruby
-        \   set tabstop=2 softtabstop=2 shiftwidth=2
         \ | set textwidth=100
 
     au FileType html,css
@@ -167,43 +174,85 @@ if has("autocmd")
 
     autocmd FileType make     set noexpandtab tabstop=4
 
-    autocmd FileType python
-        \   set tabstop=4 softtabstop=4 shiftwidth=4
-
     " The following commands automatically add the shebang
-    au BufNewFile *.pl
-        \   s,^,#!/usr/bin/perl -w,
-        \ | w
-        \ | r !chmod +x % > /dev/null
-
-    au BufNewFile *.rb
-        \   s,^,#!/usr/bin/ruby -w -KU,
-        \ | w
-        \ | r !chmod +x % > /dev/null
-
     au BufNewFile *.sh
         \   s,^,#!/bin/bash,
         \ | w
         \ | r !chmod +x % > /dev/null
-
-    au BufNewFile *.py
-        \   s,^,#!/usr/bin/python,
-        \ | w
-        \ | r !chmod +x % > /dev/null
-
-    autocmd BufWritePre *.py normal m`:%s/\s\+$//e ``
-    let python_highlight_all = 1
 
     " Restore position in file if previously edited (uses viminfo)
     au BufReadPost  *
         \   if line("'\"") > 0 && line("'\"") <= line("$")
         \ | exe "normal g'\""
         \ | endif
-
-    au BufRead,BufNewFile *.gpl
-        \ set filetype=gpl
 endif " has("autocmd")
 
+" **********
+" Language Specific Sections
+"
+" Python
+au BufNewFile *.py
+    \   s,^,#!/usr/bin/python,
+    \ | w
+    \ | r !chmod +x % > /dev/null
+
+autocmd BufWritePre *.py normal m`:%s/\s\+$//e ``
+let python_highlight_all = 1
+au FileType python
+    \   set tabstop=4 softtabstop=4 shiftwidth=4
+    \ | set nocindent
+    \ | syn keyword pythonDecorator True None False self
+    \ | inoremap <buffer> $r return
+    \ | inoremap <buffer> $i import
+    \ | inoremap <buffer> $p print
+    \ | inoremap <buffer> $f #--- PH ----------------------------------------------<esc>FP2xi
+    \ | map <buffer> <leader>1 /class
+    \ | map <buffer> <leader>2 /def
+    \ | map <buffer> <leader>C ?class
+    \ | map <buffer> <leader>D ?def
+
+" Ruby
+au BufNewFile *.rb
+    \   s,^,#!/usr/bin/ruby -w -KU,
+    \ | w
+    \ | r !chmod +x % > /dev/null
+
+au FileType ruby
+    \   set tabstop=2 softtabstop=2 shiftwidth=2
+    \ | set textwidth=100
+
+" Perl
+au BufNewFile *.pl
+    \   s,^,#!/usr/bin/perl -w,
+    \ | w
+    \ | r !chmod +x % > /dev/null
+
+au FileType perl
+    \   set tabstop=3 softtabstop=3 shiftwidth=3
+    \ | set keywordprg=perldoc\ -f
+    \ | call C_maps()
+    \ | set textwidth=100
+
+" Javascript
+au FileType javascript
+    \   call JavaScriptFold()
+    \ | setl fen
+    \ | setl nocindent
+    \ | imap <c-t> AJS.log();<esc>hi
+    \ | imap <c-a> alert();<esc>hi
+    \ | inoremap <buffer> $r return
+    \ | inoremap <buffer> $f //--- PH ----------------------------------------------<esc>FP2xi
+
+function! JavaScriptFold()
+    setl foldmethod=syntax
+    setl foldlevelstart=1
+    syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
+
+    function! FoldText()
+        return substitute(getline(v:foldstart), '{.*', '{...}', '')
+    endfunction
+    setl foldtext=FoldText()
+endfunction
 
 " **********
 " STATUSLINE
