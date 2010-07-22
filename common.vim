@@ -213,7 +213,7 @@ au FileType python
 
 " Ruby
 au BufNewFile *.rb
-    \   s,^,#!/usr/bin/ruby -w -KU,
+    \   s,^,#!/usr/bin/ruby -KU,
     \ | w
     \ | r !chmod +x % > /dev/null
 
@@ -223,7 +223,7 @@ au FileType ruby
 
 " Perl
 au BufNewFile *.pl
-    \   s,^,#!/usr/bin/perl -w,
+    \   s,^,#!/usr/bin/perl,
     \ | w
     \ | r !chmod +x % > /dev/null
 
