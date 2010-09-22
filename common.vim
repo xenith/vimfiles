@@ -233,6 +233,9 @@ au FileType perl
     \ | call C_maps()
     \ | set textwidth=100
 
+au BufNewFile,BufRead *.tt2 setf tt2html
+    :let b:tt2_syn_tags = '\[% %] <!-- -->'
+
 " Javascript
 au FileType javascript
     \   call JavaScriptFold()
