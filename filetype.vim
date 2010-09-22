@@ -582,6 +582,8 @@ au BufNewFile,BufRead *.hex,*.h32		setf hex
 " Tilde (must be before HTML)
 au BufNewFile,BufRead *.t.html			setf tilde
 
+au BufNewFile,BufRead *.tt2 setf tt2html
+
 " HTML (.shtml and .stm for server side)
 au BufNewFile,BufRead *.html,*.htm,*.shtml,*.stm  call <SID>FTCheck_html()
 
