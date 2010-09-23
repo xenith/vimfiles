@@ -47,7 +47,9 @@ set mouse=a                     " Makes mouse work in terminal
 set ttymouse=xterm2             " Makes mouse work in terminal
 set ttyfast                     " Fast terminal (local!), updates faster
 set report=0                    " Report all changed lines
-set ffs=unix,dos,mac            "Default file types
+set ffs=unix,dos,mac            " Default file types
+set wildmenu                    " Show a list of matches when using tab completion
+set hidden
 set list
 set listchars=tab:▷⋅,trail:_,nbsp:⋅
 
