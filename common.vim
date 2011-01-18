@@ -58,6 +58,7 @@ set listchars=tab:▷⋅,trail:_,nbsp:⋅
 set pastetoggle=<F12>           " Toggle paste mode
 " Hit F2 to toggle line numbers and foldcolumn
 nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR>
+nnoremap <silent> <F8> :TlistToggle<CR>
 
 " Configuration options for minibufexpl.vim
 let g:miniBufExplMapWindowNavVim = 1
