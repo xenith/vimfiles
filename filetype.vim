@@ -1162,6 +1162,7 @@ au BufNewFile,BufRead *.pyx,*.pxd		setf pyrex
 
 " Python
 au BufNewFile,BufRead *.py,*.pyw		setf python
+autocmd FileType python set complete+=k~/.vim/syntax/python.vim isk+=.,(
 
 " Radiance
 au BufNewFile,BufRead *.rad,*.mat		setf radiance

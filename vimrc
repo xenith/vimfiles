@@ -1,3 +1,4 @@
+source $VIMRUNTIME/debian.vim
 set runtimepath +=~/.vim
 set guifont=Deja\ Vu\ Sans\ Mono\ 10
 colorscheme xenith

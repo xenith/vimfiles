@@ -8,6 +8,7 @@ set nocompatible
 " ****************
 " Personal Options
 
+set number                      " Show line numbers in the sidebar
 set autoindent                  " Always set autoindenting on
 set smartindent                 " Indent smartly (following C style)
 set expandtab                   " Replace all TABs with spaces
@@ -21,7 +22,7 @@ set textwidth=100               " Max 100 columns
 set magic                       "Set magic on, for regular expressions
 set foldmethod=indent           " Foldlevel follows indentation
 set foldlevel=1000              " Big number so it doesn't autofold
-"set foldcolumn=2                " Show that funny column on the left side
+"set foldcolumn=2                " Show the column on the left side to show folds
 set autoread                    " Watch for outside changes
 set autowrite                   " Automatically save on various commands
 set nobackup                    " Never keep a backup file
@@ -53,6 +54,11 @@ set hidden
 set list
 set listchars=tab:▷⋅,trail:_,nbsp:⋅
 
+" Remaps
+set pastetoggle=<F12>           " Toggle paste mode
+" Hit F2 to toggle line numbers and foldcolumn
+nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR>
+
 " Options for the GUI
 "set guioptions-=T               " No toolbar
 "set guioptions-=m               " No menubar
@@ -65,7 +71,6 @@ set guioptions+=aA              " Selection options, so we can copy/paste
 
 " unknown options
 set wildmode=full
-set pastetoggle=<F12>
 set grepprg=grep\ -nH\
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
 match OverLength /\%81v.*/
