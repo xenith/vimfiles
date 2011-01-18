@@ -85,6 +85,10 @@ match OverLength /\%81v.*/
 " Mark syntax errors with :signs
 let g:syntastic_enable_signs=1
 
+" TagList options
+let Tlist_Auto_Open = 1
+let Tlist_Process_File_Always = 1
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Spell checking
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
