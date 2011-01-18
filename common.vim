@@ -59,6 +59,12 @@ set pastetoggle=<F12>           " Toggle paste mode
 " Hit F2 to toggle line numbers and foldcolumn
 nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR>
 
+" Configuration options for minibufexpl.vim
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1
+
 " Options for the GUI
 "set guioptions-=T               " No toolbar
 "set guioptions-=m               " No menubar
@@ -204,6 +210,7 @@ au BufNewFile *.py
     \ | r !chmod +x % > /dev/null
 
 autocmd BufWritePre *.py normal m`:%s/\s\+$//e ``
+autocmd FileType python set omnifunc=pythoncomplete#Complete
 let python_highlight_all = 1
 au FileType python
     \   set tabstop=4 softtabstop=4 shiftwidth=4
