@@ -55,10 +55,10 @@ set list
 set listchars=tab:▷⋅,trail:_,nbsp:⋅
 
 " Remaps
-set pastetoggle=<F12>           " Toggle paste mode
+set pastetoggle=<F4>           " Toggle paste mode
 " Hit F2 to toggle line numbers and foldcolumn
 nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR>
-nnoremap <silent> <F8> :TlistToggle<CR>
+nnoremap <silent> <F3> :TlistToggle<CR>
 
 " Configuration options for minibufexpl.vim
 let g:miniBufExplMapWindowNavVim = 1
@@ -86,7 +86,7 @@ match OverLength /\%81v.*/
 let g:syntastic_enable_signs=1
 
 " TagList options
-let Tlist_Auto_Open = 1
+"let Tlist_Auto_Open = 1
 let Tlist_Process_File_Always = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
