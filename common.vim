@@ -104,8 +104,9 @@ map <leader>s? z=
 " ****
 " MAPS
 
-" Enable FuzzyFinder
-map <leader>t :FuzzyFinderTextMate<CR>
+" FuzzyFinder TextMate is disabled. It doesn't work with current versions of fuzzyfinder and its
+" over 3 years old.
+"map <leader>t :FuzzyFinderTextMate<CR>
 
 " toggle search highlighting in both normal and insert modes
 map <F7> :set hlsearch!<CR>
