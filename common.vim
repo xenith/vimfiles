@@ -89,6 +89,8 @@ let g:syntastic_enable_signs=1
 "let Tlist_Auto_Open = 1
 let Tlist_Process_File_Always = 1
 
+call pathogen#infect()
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Spell checking
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
